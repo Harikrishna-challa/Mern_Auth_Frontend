@@ -2,27 +2,33 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+// Dynamically set backend URL based on environment
+const backendUrl =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:5000"
+    : process.env.REACT_APP_BACKEND_URL || "https://mern-auth-h7z6.onrender.com";
+
 const Auth = () => {
   const [isRegister, setIsRegister] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const url = isRegister
-        ? "https://mern-auth-h7z6.onrender.com/api/auth/register"
-        : "https://mern-auth-h7z6.onrender.com/api/auth/login";
-  
-      // Prepare request data properly
+        ? `${backendUrl}/api/auth/register`
+        : `${backendUrl}/api/auth/login`;
+
       const requestData = isRegister
-        ? { name, email, password }  // Include name for registration
-        : { email, password };       // Exclude name for login
-  
+        ? { name, email, password }
+        : { email, password };
+
       const { data } = await axios.post(url, requestData);
-  
+
       if (!isRegister) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("name", data.name);
@@ -35,11 +41,12 @@ const Auth = () => {
       alert(error.response?.data?.message || "An error occurred");
     }
   };
-  
+
   return (
     <div className="container d-flex justify-content-center align-items-center vh-100">
       <div className="card p-4 w-50">
         <h2 className="text-center mb-4">{isRegister ? "Register" : "Login"}</h2>
+
         <form onSubmit={handleSubmit}>
           {isRegister && (
             <div className="mb-3">
@@ -53,6 +60,7 @@ const Auth = () => {
               />
             </div>
           )}
+
           <div className="mb-3">
             <label className="form-label">Email</label>
             <input
@@ -63,22 +71,32 @@ const Auth = () => {
               required
             />
           </div>
+
           <div className="mb-3">
             <label className="form-label">Password</label>
-            <input
-              type="password"
-              className="form-control"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className="input-group">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="form-control"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
           </div>
+
           <button type="submit" className="btn btn-primary w-100">
             {isRegister ? "Register" : "Login"}
           </button>
         </form>
 
-        {/* Forgot Password Link (Visible only on Login Page) */}
         {!isRegister && (
           <p className="mt-3 text-center">
             <button className="btn btn-link" onClick={() => navigate("/forgot-password")}>

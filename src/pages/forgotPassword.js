@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+// Dynamically set backend URL based on environment
+const backendUrl =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:5000"
+    : process.env.REACT_APP_BACKEND_URL || "https://mern-auth-h7z6.onrender.com";
+
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -12,8 +18,7 @@ const ForgotPassword = () => {
     setError("");
 
     try {
-      const { data } = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/forgot-password`, { email });
-
+      const { data } = await axios.post(`${backendUrl}/api/auth/forgot-password`, { email });
       setMessage(data.message);
     } catch (error) {
       console.error("Forgot Password Error:", error);
