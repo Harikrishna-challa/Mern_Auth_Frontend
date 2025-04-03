@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const API_URL = process.env.REACT_APP_API_URL; // Load backend URL from .env
+
 const Auth = () => {
   const [isRegister, setIsRegister] = useState(false);
   const [name, setName] = useState("");
@@ -12,7 +14,7 @@ const Auth = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        const url = isRegister ? "http://localhost:5000/api/auth/register" : "http://localhost:5000/api/auth/login";
+      const url = isRegister ? `${API_URL}/api/auth/register` : `${API_URL}/api/auth/login`;
 
       const { data } = await axios.post(url, { name, email, password });
 
