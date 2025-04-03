@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const API_URL = process.env.REACT_APP_API_URL; // Load backend URL from .env
-
 const Auth = () => {
   const [isRegister, setIsRegister] = useState(false);
   const [name, setName] = useState("");
@@ -14,10 +12,17 @@ const Auth = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const url = isRegister ? `${API_URL}/api/auth/register` : `${API_URL}/api/auth/login`;
-
-      const { data } = await axios.post(url, { name, email, password });
-
+      const url = isRegister
+        ? "https://mern-auth-h7z6.onrender.com/api/auth/register"
+        : "https://mern-auth-h7z6.onrender.com/api/auth/login";
+  
+      // Prepare request data properly
+      const requestData = isRegister
+        ? { name, email, password }  // Include name for registration
+        : { email, password };       // Exclude name for login
+  
+      const { data } = await axios.post(url, requestData);
+  
       if (!isRegister) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("name", data.name);
@@ -30,7 +35,7 @@ const Auth = () => {
       alert(error.response?.data?.message || "An error occurred");
     }
   };
-
+  
   return (
     <div className="container d-flex justify-content-center align-items-center vh-100">
       <div className="card p-4 w-50">
@@ -72,6 +77,16 @@ const Auth = () => {
             {isRegister ? "Register" : "Login"}
           </button>
         </form>
+
+        {/* Forgot Password Link (Visible only on Login Page) */}
+        {!isRegister && (
+          <p className="mt-3 text-center">
+            <button className="btn btn-link" onClick={() => navigate("/forgot-password")}>
+              Forgot your password?
+            </button>
+          </p>
+        )}
+
         <p className="mt-3 text-center">
           {isRegister ? "Already have an account?" : "New user?"}{" "}
           <button className="btn btn-link" onClick={() => setIsRegister(!isRegister)}>
