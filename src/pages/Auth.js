@@ -14,10 +14,13 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(""); // Clear previous errors
+
     try {
       const url = isRegister
         ? `${backendUrl}/api/auth/register`
@@ -38,7 +41,8 @@ const Auth = () => {
         setIsRegister(false);
       }
     } catch (error) {
-      alert(error.response?.data?.message || "An error occurred");
+      console.error("Auth Error:", error);
+      setError(error.response?.data?.message || "An error occurred");
     }
   };
 
@@ -46,6 +50,8 @@ const Auth = () => {
     <div className="container d-flex justify-content-center align-items-center vh-100">
       <div className="card p-4 w-50">
         <h2 className="text-center mb-4">{isRegister ? "Register" : "Login"}</h2>
+
+        {error && <p className="text-danger text-center">{error}</p>}
 
         <form onSubmit={handleSubmit}>
           {isRegister && (
